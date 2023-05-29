@@ -19,7 +19,7 @@ jobs:
 
       - name: Iniciar sesión en la instancia de EC2
         id: start-session
-        run: aws ssm start-session --target i-0e467a0ea188ffcaa --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters '{"portNumber":["5432"],"localPortNumber":["1080"],"host":["postgresdatabase.ctsss4xcp2cw.us-east-2.rds.amazonaws.com"]}'
+        run: aws ssm start-session --target i-0e467a0ea188ffcaa --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters '{"portNumber":["5432"],"localPortNumber":["1080"],"host":["postgresdatabase.ctsss4xcp2cw.us-east-2.rds.amazonaws.com"]}' & exit 0
 
       - name: Ejecutar comando SQL
         env:
