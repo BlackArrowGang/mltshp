@@ -1,0 +1,31 @@
+name: Ejecutar comando SQL en RDS
+
+on:
+  push:
+    branches:
+      - action_test
+
+jobs:
+  ejecutar-comando-sql:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configurar AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - name: Iniciar sesión en la instancia de EC2
+        id: start-session
+        run: aws ssm start-session --target i-0e467a0ea188ffcaa --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters '{"portNumber":["5432"],"localPortNumber":["1080"],"host":["postgresdatabase.ctsss4xcp2cw.us-east-2.rds.amazonaws.com"]}'
+
+      - name: Ejecutar comando SQL
+        env:
+          DB_HOST: localhost
+          DB_PORT: 1080
+          DB_USER: postgres
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: postgres
+        run: echo "SELECT * FROM tabla;" | psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -w -P "password=$DB_PASSWORD"
